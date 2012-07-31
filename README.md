@@ -1,4 +1,6 @@
-# Smbglobal::Sms [![Build
+# Smbglobal::Sms
+
+[![Build
 Status](https://secure.travis-ci.org/mech/smbglobal-sms.png?branch=master)](http://travis-ci.org/mech/smbglobal-sms)
 
 This gem is simply a wrapper to send SMS using
