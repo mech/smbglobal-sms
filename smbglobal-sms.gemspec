@@ -16,5 +16,6 @@ Gem::Specification.new do |gem|
   gem.version       = Smbglobal::Sms::VERSION
 
   gem.add_dependency "faraday", "0.8.1"
+  gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec", "~> 2.11"
 end
