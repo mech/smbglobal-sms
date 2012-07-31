@@ -1,6 +1,7 @@
 # Smbglobal::Sms
 
-TODO: Write a gem description
+This gem is simply a wrapper to send SMS using
+[SMBGlobal](http://www.smbglobal.net/web-based-sms-system.html) HTTP API.
 
 ## Installation
 
@@ -17,8 +18,6 @@ Or install it yourself as:
     $ gem install smbglobal-sms
 
 ## Usage
-
-TODO: Write usage instructions here
 
 ## Contributing
 
