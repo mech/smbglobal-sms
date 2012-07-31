@@ -2,6 +2,8 @@
 
 [![Build
 Status](https://secure.travis-ci.org/mech/smbglobal-sms.png?branch=master)](http://travis-ci.org/mech/smbglobal-sms)
+[![Code
+Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/mech/smbglobal-sms)
 
 This gem is simply a wrapper to send SMS using
 [SMBGlobal](http://www.smbglobal.net/web-based-sms-system.html) HTTP API.
