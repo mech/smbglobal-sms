@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(spec|features)/})
   gem.name          = "smbglobal-sms"
   gem.require_paths = ["lib"]
-  gem.version       = Smbglobal::Sms::VERSION
+  gem.version       = SmbglobalSms::VERSION
 
   gem.add_dependency "faraday", "0.8.1"
   gem.add_development_dependency "rake"

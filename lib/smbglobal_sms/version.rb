@@ -1,5 +1,3 @@
-module Smbglobal
-  module Sms
-    VERSION = "0.0.1"
-  end
+module SmbglobalSms
+  VERSION = "0.0.1"
 end
