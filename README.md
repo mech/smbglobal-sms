@@ -5,7 +5,7 @@ Status](https://secure.travis-ci.org/mech/smbglobal-sms.png?branch=master)](http
 [![Code
 Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/mech/smbglobal-sms)
 
-This gem is simply a wrapper to send SMS using
+This gem is a wrapper to send SMS using
 [SMBGlobal](http://www.smbglobal.net/web-based-sms-system.html) HTTP API.
 
 ## Installation
@@ -22,7 +22,39 @@ Or install it yourself as:
 
     $ gem install smbglobal-sms
 
+## Configuration
+
+We get credential from your environment variables, please set your API's
+username and password via:
+
+    SMBGLOBAL_USERNAME
+    SMBGLOBAL_PASSWORD
+
+To overwrite the host name, you can create a `smbglobal_sms.rb` file:
+
+    SmbglobalSms.configure do |config|
+      config.host_name = "api.smbglobal.net"
+    end
+
 ## Usage
+
+You need to create a `SmbglobalSms::Request` object in order to send
+SMS.
+
+    request = SmbglobalSms::Request.new([67656765, 98765676], "Meet you at 5")
+    response.request.send_sms
+
+A `SmbglobalSms::Response` object will be returned to you to check for
+status and remaining credits.
+
+    response.status  #=> "OK", "NOT OK"
+    response.reason  #=> "Not enough credit", "Wrong credential"
+    response.credits #=> 4500
+
+Please note that credits reflected has been normalized, which means if
+you see 4500 left, it means you can send 4500 more SMS messages.
+SMBGlobal usually use 4 credits for 1 SMS message, but in order to
+simplify thing, we will use 1 credit for 1 SMS message.
 
 ## Contributing
 
