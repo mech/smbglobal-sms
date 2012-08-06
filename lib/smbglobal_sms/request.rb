@@ -43,14 +43,7 @@ module SmbglobalSms
     # @return [SmbglobalSms::Response]
     def send_sms(id, message, recipients, sender="Jobline")
       recipients = recipients.map(&:to_s).map(&:strip).join(":")
-
       response = Response.new(response_body(id, message, recipients, sender))
-
-      if response.success?
-        return response
-      else
-        report_error(response.status)
-      end
     end
 
     private
@@ -63,26 +56,6 @@ module SmbglobalSms
         sender: sender,
         binary: string_to_hex(message),
         recp: recipients}).body
-    end
-
-    def report_error(status)
-      if status == -1
-        raise Error::InvalidCredentialError
-      elsif status == -2 || status == -101
-        raise Error::InvalidDataFormatError
-      elsif status == -3
-        raise Error::NotEnoughCreditsError
-      elsif status == -4
-        raise Error::InvalidRecipientError
-      elsif status == -5
-        raise Error::ProcessingError
-      elsif status == -100
-        raise Error::MissingParametersError
-      elsif status == -102
-        raise Error::DuplicatedRequestError
-      elsif status == -103
-        raise Error::ServiceUnavailableError
-      end
     end
 
     # Convert a string into its hexadecimal counterpart
