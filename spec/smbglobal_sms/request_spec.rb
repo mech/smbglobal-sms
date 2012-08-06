@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'spec_helper'
 
 require_relative '../../lib/smbglobal_sms/request'
@@ -47,7 +48,7 @@ module SmbglobalSms
           username: request.username,
           password: request.password,
           sender: "Jobline",
-          text: message,
+          binary: request.__send__(:string_to_hex, message),
           recp: recipient
         }
       end
@@ -114,6 +115,24 @@ module SmbglobalSms
           request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
           expect { request.send_sms(1, message, [recipient]) }.to raise_error(Error::InvalidDataFormatError)
         end
+      end
+    end
+
+    # Test for a private method :(
+    describe "#string_to_hex" do
+      it "converts 简讯测试 to 7b808baf6d4b8bd5" do
+        s = request.__send__(:string_to_hex, "简讯测试")
+        expect(s).to eq("7b808baf6d4b8bd5")
+      end
+
+      it "converts Confident Ruby into 436f6e666964656e742052756279" do
+        s = request.__send__(:string_to_hex, "Confident Ruby")
+        expect(s).to eq("436f6e666964656e742052756279")
+      end
+
+      it "converts こんにちは into 30533093306b3061306f" do
+        s = request.__send__(:string_to_hex, "こんにちは")
+        expect(s).to eq("30533093306b3061306f")
       end
     end
   end

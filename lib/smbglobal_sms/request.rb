@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'faraday'
 
 require_relative 'response'
@@ -7,12 +8,7 @@ module SmbglobalSms
   class Request
     attr_reader :connection
 
-    # Prepare the message to be sent to one or several recipients.
-    #
-    # @example
-    #   request = Request.new
-    #   request.send_sms([67656765, 98765676], "Meet you at 5")
-    # @param [String] message the sms message
+    # Prepare Faraday connection object
     def initialize
       @connection = Faraday.new(url: SmbglobalSms.configuration.host_name)
     end
@@ -65,7 +61,7 @@ module SmbglobalSms
         username: username,
         password: password,
         sender: sender,
-        text: message,
+        binary: string_to_hex(message),
         recp: recipients}).body
     end
 
@@ -87,6 +83,16 @@ module SmbglobalSms
       elsif status == -103
         raise Error::ServiceUnavailableError
       end
+    end
+
+    # Convert a string into its hexadecimal counterpart
+    #
+    # @example
+    #   string_to_hex("简讯测试") will produce 7b808baf6d4b8bd5
+    def string_to_hex(string)
+      string.unpack('U' * string.length).collect do |num|
+        num.to_s(16)
+      end.join.downcase
     end
   end
 end
