@@ -48,22 +48,44 @@ module SmbglobalSms
     def send_sms(id, message, recipients, sender="Jobline")
       recipients = recipients.map(&:to_s).map(&:strip).join(":")
 
-      response = @connection.post(endpoint, {
+      response = Response.new(response_body(id, message, recipients, sender))
+
+      if response.success?
+        return response
+      else
+        report_error(response.status)
+      end
+    end
+
+    private
+
+    def response_body(id, message, recipients, sender)
+      @connection.post(endpoint, {
         transactionid: id,
         username: username,
         password: password,
         sender: sender,
         text: message,
-        recp: recipients})
+        recp: recipients}).body
+    end
 
-      _response = Response.new(response.body)
-
-      if _response.success?
-        return _response
-      else
-        if _response.status == -1
-          raise Error::InvalidCredentialError
-        end
+    def report_error(status)
+      if status == -1
+        raise Error::InvalidCredentialError
+      elsif status == -2 || status == -101
+        raise Error::InvalidDataFormatError
+      elsif status == -3
+        raise Error::NotEnoughCreditsError
+      elsif status == -4
+        raise Error::InvalidRecipientError
+      elsif status == -5
+        raise Error::ProcessingError
+      elsif status == -100
+        raise Error::MissingParametersError
+      elsif status == -102
+        raise Error::DuplicatedRequestError
+      elsif status == -103
+        raise Error::ServiceUnavailableError
       end
     end
   end
