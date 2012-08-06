@@ -20,7 +20,27 @@ module SmbglobalSms
     describe "#status" do
       it "knows the status of the response" do
         response = Response.new(body)
-        expect(response.status).to eq("100")
+        expect(response.status).to eq(100)
+      end
+    end
+
+    describe "#credits" do
+      it "knows the remaining credits" do
+        response = Response.new(body)
+        expect(response.credits).to eq(4500)
+      end
+    end
+
+    describe "#success?" do
+      it "positive status will be considered as successful" do
+        response = Response.new(body)
+        expect(response.success?).to be_true
+      end
+
+      it "negative status will be considered as unsuccessful" do
+        body = "<response><status>-1</status><credits /></response>"
+        response = Response.new(body)
+        expect(response.success?).not_to be_true
       end
     end
   end

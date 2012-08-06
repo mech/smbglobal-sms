@@ -10,7 +10,15 @@ module SmbglobalSms
     end
 
     def status
-      "100"
+      @doc.xpath('//status').first.text.to_i
+    end
+
+    def credits
+      @doc.xpath('//credits').first.text.to_i
+    end
+
+    def success?
+      status > 0 ? true : false
     end
   end
 end
