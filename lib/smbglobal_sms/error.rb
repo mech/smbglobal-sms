@@ -2,6 +2,9 @@ module SmbglobalSms
   module Error
     # Status = -1
     class InvalidCredentialError < StandardError
+      def message
+        "Invalid username or password"
+      end
     end
 
     # Status = -2 or -101
