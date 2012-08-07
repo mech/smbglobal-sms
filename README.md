@@ -47,8 +47,7 @@ SMS.
 A `SmbglobalSms::Response` object will be returned to you to check for
 status and remaining credits.
 
-    response.status  #=> "OK", "NOT OK"
-    response.reason  #=> "Not enough credit", "Wrong credential"
+    response.status  #=> 100
     response.credits #=> 4500
 
 Please note that credits reflected has been normalized, which means if
