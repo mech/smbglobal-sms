@@ -41,8 +41,9 @@ To overwrite the host name, you can create a `smbglobal_sms.rb` file:
 You need to create a `SmbglobalSms::Request` object in order to send
 SMS.
 
+    transaction_id = get_any_integer_unique_id
     request  = SmbglobalSms::Request.new
-    response = request.send_sms("Meet you at 5", 67656765, 98765676)
+    response = request.send_sms(transaction_id, "Meet you at 5", [87656765, 98765676])
 
 A `SmbglobalSms::Response` object will be returned to you to check for
 status and remaining credits.
