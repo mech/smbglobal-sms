@@ -69,7 +69,7 @@ module SmbglobalSms
     describe "#credits" do
       it "knows the remaining credits" do
         response = Response.new(body)
-        expect(response.credits).to eq(4500)
+        expect(response.credits).to eq(1125)
       end
     end
 

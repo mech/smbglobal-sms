@@ -20,7 +20,7 @@ module SmbglobalSms
     end
 
     def credits
-      @doc.xpath('//credits').first.text.to_i
+      @doc.xpath('//credits').first.text.to_i / 4
     end
 
     def success?
