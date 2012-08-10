@@ -58,7 +58,8 @@ simplify thing, we will use 1 credit for 1 SMS message.
 
 ## Unicode string for SMS
 
-See http://sms.24cro.com/op_1_4_en.htm
+http://sms.24cro.com/op_1_4_en.htm
+http://spin.atomicobject.com/2010/07/28/converting-to-utf-16-ucs-2-with-iconv/
 
 ## Contributing
 

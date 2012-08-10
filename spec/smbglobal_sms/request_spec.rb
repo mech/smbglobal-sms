@@ -120,19 +120,46 @@ module SmbglobalSms
 
     # Test for a private method :(
     describe "#string_to_hex" do
-      it "converts 简讯测试 to 7b808baf6d4b8bd5" do
+      it "converts '简讯测试' to 7b808baf6d4b8bd5" do
         s = request.__send__(:string_to_hex, "简讯测试")
         expect(s).to eq("7b808baf6d4b8bd5")
       end
 
-      it "converts Confident Ruby into 436f6e666964656e742052756279" do
+      it "converts Confident Ruby into 0043006f006e0066006900640065006e007400200052007500620079" do
         s = request.__send__(:string_to_hex, "Confident Ruby")
-        expect(s).to eq("436f6e666964656e742052756279")
+        expect(s).to eq("0043006f006e0066006900640065006e007400200052007500620079")
+        # 436f6e666964656e742052756279
       end
 
-      it "converts こんにちは into 30533093306b3061306f" do
+      it "converts 'こんにちは' into 30533093306b3061306f" do
         s = request.__send__(:string_to_hex, "こんにちは")
         expect(s).to eq("30533093306b3061306f")
+      end
+
+      it "converts 'Demo 简' into 00440065006d006f00207b80" do
+        s = request.__send__(:string_to_hex, "Demo 简")
+        expect(s).to eq("00440065006d006f00207b80")
+        # 0043006f006e0066006900640065006e007400200052007500620079
+      end
+
+      it "converts 'Demo' into 00440065006d006f" do
+        s = request.__send__(:string_to_hex, "Demo")
+        expect(s).to eq("00440065006d006f")
+      end
+
+      it "converts 'Confident Rubyこんにちは' into 0043006f006e0066006900640065006e00740020005200750062007930533093306b3061306f" do
+        s = request.__send__(:string_to_hex, "Confident Rubyこんにちは")
+        expect(s).to eq("0043006f006e0066006900640065006e00740020005200750062007930533093306b3061306f")
+      end
+
+      it "converts 'Confident\r\rRuby' into ?" do
+        s = request.__send__(:string_to_hex, "Confident\r\rRuby")
+        expect(s).to eq("0043006f006e0066006900640065006e0074000d000d0052007500620079")
+      end
+
+      it "converts 'Confident\r\nRuby' into ?" do
+        s = request.__send__(:string_to_hex, "Confident\r\nRuby")
+        expect(s).to eq("0043006f006e0066006900640065006e0074000d000a0052007500620079")
       end
     end
   end

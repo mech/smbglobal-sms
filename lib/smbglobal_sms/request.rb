@@ -63,9 +63,21 @@ module SmbglobalSms
     # @example
     #   string_to_hex("简讯测试") will produce 7b808baf6d4b8bd5
     def string_to_hex(string)
-      string.unpack('U' * string.length).collect do |num|
-        num.to_s(16)
+      string.unpack('U*').collect do |num|
+        pad(num.to_s(16))
       end.join.downcase
+    end
+
+    def pad(s)
+      if s.length >= 4
+        s
+      elsif s.length == 3
+        "0#{s}"
+      elsif s.length == 2
+        "00#{s}"
+      elsif s.length == 1
+        "000#{s}"
+      end
     end
   end
 end
