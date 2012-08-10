@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'faraday'
+require "active_support/notifications"
 
 require_relative 'response'
 require_relative 'error'
@@ -49,12 +50,17 @@ module SmbglobalSms
     private
 
     def response_body(id, message, recipients, sender)
+      msg = string_to_hex(message)
+      query_string = "transactionid=#{id}&username=#{username}&password=#{password}&sender=#{sender}&binary=#{msg}&recp=#{recipients}"
+
+      ActiveSupport::Notifications.instrument(:sms_request, query_string: query_string)
+
       @connection.post(endpoint, {
         transactionid: id,
         username: username,
         password: password,
         sender: sender,
-        binary: string_to_hex(message),
+        binary: msg,
         recp: recipients}).body
     end
 
