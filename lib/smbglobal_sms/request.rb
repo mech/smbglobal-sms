@@ -51,7 +51,7 @@ module SmbglobalSms
     # @param [String] sender if you want reply, replace it with a phone number
     # @return [SmbglobalSms::Response]
     def send_unicode_sms(id, message, recipients, sender="Jobline")
-      recipients = recipients.map(&:to_s).map(&:strip).join(":")
+      recipients = join_recipients(recipients)
       response = Response.new(unicode_response_body(id, message, recipients, sender))
     end
 
@@ -63,11 +63,15 @@ module SmbglobalSms
     # @param [String] sender if you want reply, replace it with a phone number
     # @return [SmbglobalSms::Response]
     def send_ascii_sms(id, message, recipients, sender="Jobline")
-      recipients = recipients.map(&:to_s).map(&:strip).join(":")
+      recipients = join_recipients(recipients)
       response = Response.new(ascii_response_body(id, message, recipients, sender))
     end
 
     private
+
+    def join_recipients(recipients)
+      recipients.map(&:to_s).map(&:strip).join(":")
+    end
 
     def ascii_response_body(id, message, recipients, sender)
       params = {
