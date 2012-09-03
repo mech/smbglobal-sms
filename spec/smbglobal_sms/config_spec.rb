@@ -18,15 +18,18 @@ describe SmbglobalSms do
 
     it "setup configuration" do
       host_name = "api.smbglobal.net"
-      xml_unicode_sms_end_point = "/api/sendunicodesms2"
+      unicode_end_point = "/api/sendunicodesms2"
+      ascii_end_point = "/api/sendsms2"
 
       SmbglobalSms.configure do |config|
         config.host_name = host_name
-        config.xml_unicode_sms_end_point = xml_unicode_sms_end_point
+        config.unicode_end_point = unicode_end_point
+        config.ascii_end_point = ascii_end_point
       end
 
       SmbglobalSms.configuration.host_name.should == host_name
-      SmbglobalSms.configuration.xml_unicode_sms_end_point.should == xml_unicode_sms_end_point
+      SmbglobalSms.configuration.unicode_end_point.should == unicode_end_point
+      SmbglobalSms.configuration.ascii_end_point.should == ascii_end_point
     end
   end
 end

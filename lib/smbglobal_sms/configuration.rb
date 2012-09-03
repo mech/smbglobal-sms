@@ -1,5 +1,5 @@
 module SmbglobalSms
   class Configuration
-    attr_accessor :host_name, :xml_unicode_sms_end_point, :xml_sms_end_point
+    attr_accessor :host_name, :unicode_end_point, :ascii_end_point
   end
 end

@@ -9,7 +9,8 @@ module SmbglobalSms
     let(:recipient) { "98752616" }
     let(:message)   { "Hello, World!" }
     let(:host_name) { SmbglobalSms.configuration.host_name }
-    let(:xml_unicode_sms_end_point) { SmbglobalSms.configuration.xml_unicode_sms_end_point }
+    let(:unicode_end_point) { SmbglobalSms.configuration.unicode_end_point }
+    let(:ascii_end_point) { SmbglobalSms.configuration.ascii_end_point }
 
     before { ENV.stub(:[]) } # Avoid "Please stub a default value first if message might be received with other args as well"
 
@@ -21,9 +22,9 @@ module SmbglobalSms
       end
     end
 
-    describe "#endpoint" do
-      it "knows the request endpoint for sending SMS" do
-        expect(request.endpoint).to eq(xml_unicode_sms_end_point)
+    describe "#unicode_end_point" do
+      it "knows the request endpoint for sending Unicode SMS" do
+        expect(request.unicode_end_point).to eq(unicode_end_point)
       end
     end
 
@@ -41,7 +42,84 @@ module SmbglobalSms
       end
     end
 
-    describe "#send_sms" do
+    describe "#send_ascii_sms" do
+      let(:payload) do
+        {
+          transactionid: 1,
+          username: request.username,
+          password: request.password,
+          sender: "Jobline",
+          text: message,
+          recp: recipient
+        }
+      end
+
+      it "returns a response object" do
+        res = stub(body: "<response><status>200</status><credit>4500</credits></response>")
+        request.connection.should_receive(:post).with(request.ascii_end_point, payload).and_return(res)
+        response = request.send_ascii_sms(1, message, [recipient])
+        expect(response.class).to eq(SmbglobalSms::Response)
+        expect(response.status).to eq(200)
+      end
+
+      context "Error conditions" do
+        it "raises InvalidCredentialError if wrong credential" do
+          res = stub(body: "<response><status>-1</status><credits /></response>")
+          request.connection.should_receive(:post).with(request.ascii_end_point, payload).and_return(res)
+          expect { request.send_ascii_sms(1, message, [recipient]) }.to raise_error(Error::InvalidCredentialError)
+        end
+
+        it "raises InvalidDataFormatError if data format is wrong" do
+          res = stub(body: "<response><status>-2</status><credits /></response>")
+          request.connection.should_receive(:post).with(request.ascii_end_point, payload).and_return(res)
+          expect { request.send_ascii_sms(1, message, [recipient]) }.to raise_error(Error::InvalidDataFormatError)
+        end
+
+        it "raises NotEnoughCreditsError if credits are insufficient" do
+          res = stub(body: "<response><status>-3</status><credits /></response>")
+          request.connection.should_receive(:post).with(request.ascii_end_point, payload).and_return(res)
+          expect { request.send_ascii_sms(1, message, [recipient]) }.to raise_error(Error::NotEnoughCreditsError)
+        end
+
+        it "raises InvalidRecipientError if wrong recipient" do
+          res = stub(body: "<response><status>-4</status><credits /></response>")
+          request.connection.should_receive(:post).with(request.ascii_end_point, payload).and_return(res)
+          expect { request.send_ascii_sms(1, message, [recipient]) }.to raise_error(Error::InvalidRecipientError)
+        end
+
+        it "raises ProcessingError if processing hiccup" do
+          res = stub(body: "<response><status>-5</status><credits /></response>")
+          request.connection.should_receive(:post).with(request.ascii_end_point, payload).and_return(res)
+          expect { request.send_ascii_sms(1, message, [recipient]) }.to raise_error(Error::ProcessingError)
+        end
+
+        it "raises MissingParametersError if parameters are missing" do
+          res = stub(body: "<response><status>-100</status><credits /></response>")
+          request.connection.should_receive(:post).with(request.ascii_end_point, payload).and_return(res)
+          expect { request.send_ascii_sms(1, message, [recipient]) }.to raise_error(Error::MissingParametersError)
+        end
+
+        it "raises DuplicatedRequestError if request is duplicated" do
+          res = stub(body: "<response><status>-102</status><credits /></response>")
+          request.connection.should_receive(:post).with(request.ascii_end_point, payload).and_return(res)
+          expect { request.send_ascii_sms(1, message, [recipient]) }.to raise_error(Error::DuplicatedRequestError)
+        end
+
+        it "raises ServiceUnavailableError if server down" do
+          res = stub(body: "<response><status>-103</status><credits /></response>")
+          request.connection.should_receive(:post).with(request.ascii_end_point, payload).and_return(res)
+          expect { request.send_ascii_sms(1, message, [recipient]) }.to raise_error(Error::ServiceUnavailableError)
+        end
+
+        it "raises InvalidDataFormatError if data format is wrong" do
+          res = stub(body: "<response><status>-101</status><credits /></response>")
+          request.connection.should_receive(:post).with(request.ascii_end_point, payload).and_return(res)
+          expect { request.send_ascii_sms(1, message, [recipient]) }.to raise_error(Error::InvalidDataFormatError)
+        end
+      end
+    end
+
+    describe "#send_unicode_sms" do
       let(:payload) do
         {
           transactionid: 1,
@@ -55,8 +133,8 @@ module SmbglobalSms
 
       it "returns a response object" do
         res = stub(body: "<response><status>200</status><credit>4500</credits></response>")
-        request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
-        response = request.send_sms(1, message, [recipient])
+        request.connection.should_receive(:post).with(request.unicode_end_point, payload).and_return(res)
+        response = request.send_unicode_sms(1, message, [recipient])
         expect(response.class).to eq(SmbglobalSms::Response)
         expect(response.status).to eq(200)
       end
@@ -64,56 +142,56 @@ module SmbglobalSms
       context "Error conditions" do
         it "raises InvalidCredentialError if wrong credential" do
           res = stub(body: "<response><status>-1</status><credits /></response>")
-          request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
-          expect { request.send_sms(1, message, [recipient]) }.to raise_error(Error::InvalidCredentialError)
+          request.connection.should_receive(:post).with(request.unicode_end_point, payload).and_return(res)
+          expect { request.send_unicode_sms(1, message, [recipient]) }.to raise_error(Error::InvalidCredentialError)
         end
 
         it "raises InvalidDataFormatError if data format is wrong" do
           res = stub(body: "<response><status>-2</status><credits /></response>")
-          request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
-          expect { request.send_sms(1, message, [recipient]) }.to raise_error(Error::InvalidDataFormatError)
+          request.connection.should_receive(:post).with(request.unicode_end_point, payload).and_return(res)
+          expect { request.send_unicode_sms(1, message, [recipient]) }.to raise_error(Error::InvalidDataFormatError)
         end
 
         it "raises NotEnoughCreditsError if credits are insufficient" do
           res = stub(body: "<response><status>-3</status><credits /></response>")
-          request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
-          expect { request.send_sms(1, message, [recipient]) }.to raise_error(Error::NotEnoughCreditsError)
+          request.connection.should_receive(:post).with(request.unicode_end_point, payload).and_return(res)
+          expect { request.send_unicode_sms(1, message, [recipient]) }.to raise_error(Error::NotEnoughCreditsError)
         end
 
         it "raises InvalidRecipientError if wrong recipient" do
           res = stub(body: "<response><status>-4</status><credits /></response>")
-          request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
-          expect { request.send_sms(1, message, [recipient]) }.to raise_error(Error::InvalidRecipientError)
+          request.connection.should_receive(:post).with(request.unicode_end_point, payload).and_return(res)
+          expect { request.send_unicode_sms(1, message, [recipient]) }.to raise_error(Error::InvalidRecipientError)
         end
 
         it "raises ProcessingError if processing hiccup" do
           res = stub(body: "<response><status>-5</status><credits /></response>")
-          request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
-          expect { request.send_sms(1, message, [recipient]) }.to raise_error(Error::ProcessingError)
+          request.connection.should_receive(:post).with(request.unicode_end_point, payload).and_return(res)
+          expect { request.send_unicode_sms(1, message, [recipient]) }.to raise_error(Error::ProcessingError)
         end
 
         it "raises MissingParametersError if parameters are missing" do
           res = stub(body: "<response><status>-100</status><credits /></response>")
-          request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
-          expect { request.send_sms(1, message, [recipient]) }.to raise_error(Error::MissingParametersError)
+          request.connection.should_receive(:post).with(request.unicode_end_point, payload).and_return(res)
+          expect { request.send_unicode_sms(1, message, [recipient]) }.to raise_error(Error::MissingParametersError)
         end
 
         it "raises DuplicatedRequestError if request is duplicated" do
           res = stub(body: "<response><status>-102</status><credits /></response>")
-          request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
-          expect { request.send_sms(1, message, [recipient]) }.to raise_error(Error::DuplicatedRequestError)
+          request.connection.should_receive(:post).with(request.unicode_end_point, payload).and_return(res)
+          expect { request.send_unicode_sms(1, message, [recipient]) }.to raise_error(Error::DuplicatedRequestError)
         end
 
         it "raises ServiceUnavailableError if server down" do
           res = stub(body: "<response><status>-103</status><credits /></response>")
-          request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
-          expect { request.send_sms(1, message, [recipient]) }.to raise_error(Error::ServiceUnavailableError)
+          request.connection.should_receive(:post).with(request.unicode_end_point, payload).and_return(res)
+          expect { request.send_unicode_sms(1, message, [recipient]) }.to raise_error(Error::ServiceUnavailableError)
         end
 
         it "raises InvalidDataFormatError if data format is wrong" do
           res = stub(body: "<response><status>-101</status><credits /></response>")
-          request.connection.should_receive(:post).with(request.endpoint, payload).and_return(res)
-          expect { request.send_sms(1, message, [recipient]) }.to raise_error(Error::InvalidDataFormatError)
+          request.connection.should_receive(:post).with(request.unicode_end_point, payload).and_return(res)
+          expect { request.send_unicode_sms(1, message, [recipient]) }.to raise_error(Error::InvalidDataFormatError)
         end
       end
     end
